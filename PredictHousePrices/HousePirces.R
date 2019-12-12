@@ -323,6 +323,7 @@ myMSE<-function(pred,price){
 
 sqrt(myMSE(real$SalePrice,predictedPrice$predictedPrice))
 
+# Minimum Value of Square root of MSE : 69484.39
 
 
 
