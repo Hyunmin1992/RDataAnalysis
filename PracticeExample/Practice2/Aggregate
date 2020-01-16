@@ -1,0 +1,42 @@
+# 데이터 불러오기 ( Importing Data )
+dau<-read.csv("C:\\Users\\Playdata\\Desktop\\data\\section4-dau.csv", header=T, stringsAsFactors = F)
+user.info<-read.csv("C:\\Users\\Playdata\\Desktop\\data\\section4-user_info.csv", header=T, stringsAsFactors = F)
+
+# 데이터 병합하기 ( Merging Data )
+dau.user.info<-merge(dau,user.info, by=c("user_id","app_name"),all.x=T)
+
+# 년도와 월 추출 ( Extracting year and month from date )
+dau.user.info$log_month<-substr(dau.user.info$log_date,1,7)
+
+# 연령과 성별을 합친 새로운 변수 만들기
+# Adding new variable with gender and generation
+dau.user.info$gender_age<-paste(dau.user.info$gender,'_',dau.user.info$generation,sep = '')
+
+# 새로운변수로 집계값 보기 ( To see cross table with new variable )
+table(dau.user.info$log_month,dau.user.info$gender_age)
+
+# 라이브러리 불러오기 ( Importing Library )
+library(plyr)
+library(reshape2)
+
+# 유저의 수를 월별 성별 연령별로 구해보기
+# To count the number of users by log_month and generation and gender
+dcast(dau.user.info, log_month~generation+gender, value.var="user_id",length)
+
+# 라이브러리 불러오기 ( Importin Library )
+library(ggplot2)
+
+# 날짜별 기기타입별 유저수 구하기
+# Count the number of users by date and device type.
+dau.user.info.device.summary<-ddply(dau.user.info,.(log_date,device_type), transform, dau=length(user_id))
+
+# 날짜형식을 날짜타입을 변환 ( Convert date columns as date type
+dau.user.info.device.summary$log_date<-as.Date(dau.user.info.device.summary$log_date)
+
+# y값의 범위 지정 ( Set the range of Y )
+limits<-c(0,max(dau.user.info.device.summary$dau))
+
+# 그래프 그리기 ( Draw graph )
+ggplot(dau.user.info.device.summary, aes(x=log_date,y=dau,col=device_type,lty=device_type,shape=device_type))+
+  geom_line(lwd=1)+geom_point(size=4)+scale_y_continuous(limits=limits)
+
