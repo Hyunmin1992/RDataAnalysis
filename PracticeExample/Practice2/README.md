@@ -3,7 +3,7 @@
 Judging from the cross table,<br>
 the number of users using Android decreased.
 
-<img src="./img/reference1.png" width="800" height="600">
+<img src="./img/reference1.png" width="600" height="200">
 
 
 Judging from the graph,<br>
