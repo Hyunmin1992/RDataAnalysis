@@ -1,0 +1,10 @@
+# 데이터 불러오기 ( Importing Data )
+ad.data<-read.csv("C:\\Users\\Playdata\\Desktop\\data\\ad_result.csv", header=T, stringsAsFactors = F)
+
+# 중회귀 분석 ( Multiple Regression Analysis )
+result<-lm(data=ad.data,install~tvcm+magazine)
+summary(result)
+
+# 그래프 그리기 ( Drawing Graph )
+ggplot(ad.data,aes(x=magazine,y=install))+geom_point()+xlab("잡지광고비")+ylab("신규 유저수")
+ggplot(ad.data,aes(x=tvcm,y=install))+geom_point()+xlab("TV 광고비")+ylab("신규 유저수")
