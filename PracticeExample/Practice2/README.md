@@ -1,5 +1,11 @@
 <h2>This is the result of Analysis</h2>
 
+Judging from the cross table,<br>
+the number of users using Android decreased.
+
+<img src="./img/reference1.png" width="800" height="600">
+
+
 Judging from the graph,<br>
 the number of users using Android has started decreasing from September.
 
