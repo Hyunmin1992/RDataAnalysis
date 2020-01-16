@@ -1,0 +1,38 @@
+# 데이터 불러오기 ( Importing Data)
+ab.test.goal<-read.csv("C:\\Users\\Playdata\\Desktop\\data\\section5-ab_test_goal.csv", header=T, stringsAsFactors = F)
+ab.test.imp<-read.csv("C:\\Users\\Playdata\\Desktop\\data\\section5-ab_test_imp.csv", header=T, stringsAsFactors = F)
+
+# 데이터 병합 ( Merging Data )
+ab.test.imp <- merge(ab.test.imp, ab.test.goal, by="transaction_id", all.x=T, suffixes=c("",".g"))
+
+# user_id가 결측값이면 0 아니면 1로 ( if na, 0 else 1 )
+# 클릭을 안했으면 NA 이므로 0 으로 치환하는 작업 ( Process for replacing NA with 0 , if not clicked )
+ab.test.imp$is.goal<-ifelse(is.na(ab.test.imp$user_id.g),0,1)
+
+# 테스트별 cvr 값 구하기 ( Get the value of CVR for each test )
+ddply(ab.test.imp,.(test_case),summarise,cvr=sum(is.goal)/length(user_id))
+
+# 카이제곱검정 ( Chisq test )
+chisq.test(ab.test.imp$test_case, ab.test.imp$is.goal)
+table(ab.test.imp$is.goal)
+library(ggplot2)
+
+# 날짜별, 테스트 케이스별로 클릭율을 산출하기
+ab.test.imp.summary <- ddply(ab.test.imp, .(log_date, test_case), summarize, imp=length(user_id), cv=sum(is.goal), cvr=sum(is.goal)/length(user_id))
+
+# 테스트 케이스별로 클릭율을 산출하기
+ab.test.imp.summary <- ddply(ab.test.imp.summary, .(test_case), transform, cvr.avg=sum(cv)/sum(imp))
+ 
+ # 날짜값을 날짜형식으로 변환 ( Convert the type of log_data as date type )
+ab.test.imp.summary$log_date <- as.Date(ab.test.imp.summary$log_date)
+
+# y값의 범위 정하기 ( Set the range of y )
+limits <- c(0, max(ab.test.imp.summary$cvr))
+
+# 그래프 그리기 ( Draw Graph )
+ggplot(ab.test.imp.summary,aes(x=log_date,y=cvr, col=test_case,lty=test_case, shape=test_case)) +
+  geom_line(lwd=1) +
+  geom_point(size=4) +
+  geom_line(aes(y=cvr.avg,col=test_case)) +
+  scale_y_continuous(limits=limits)
+
